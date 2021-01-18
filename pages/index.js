@@ -11,7 +11,7 @@ async function feedFetch(...args) {
 
 function Feed() {
   const { data } = useSWR(
-    "https://daemon1024.github.io/posts/index.xml",
+    "https://cors-anywhere.herokuapp.com/"+"https://daemon1024.github.io/posts/index.xml",
     feedFetch
   );
   if (!data) return <h3>loading...</h3>;
