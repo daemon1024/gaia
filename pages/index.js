@@ -9,15 +9,17 @@ async function feedFetch(...args) {
   return feed;
 }
 
-function Feed(props) {
+function Feed({ initialData }) {
   const { data } = useSWR(
-    "https://cors-anywhere.herokuapp.com/" +
-      "https://daemon1024.github.io/posts/index.xml",
+    "https://daemon1024.github.io/posts/index.xml",
     feedFetch,
-    { initialData: props.feed }
+    {
+      initialData,
+    }
   );
-  if (!data) return <h3>loading...</h3>;
-  console.log(data);
+
+  if (!data) return <p>Loading</p>;
+
   return (
     <>
       <h2 className={styles.subtitle}>{data.title}</h2>
@@ -32,7 +34,7 @@ function Feed(props) {
   );
 }
 
-export default function Home() {
+export default function Home({ initialData }) {
   return (
     <div className={styles.container}>
       <Head>
@@ -43,7 +45,7 @@ export default function Home() {
       <main className={styles.main}>
         <h1 className={styles.title}>Welcome to Gaia!</h1>
 
-        <Feed />
+        <Feed initialData={initialData} />
       </main>
 
       <footer className={styles.footer}>
@@ -61,11 +63,12 @@ export default function Home() {
 }
 
 export async function getStaticProps() {
-  const feed = await feedFetch("https://daemon1024.github.io/posts/index.xml");
-
+  const initialData = await feedFetch(
+    "https://daemon1024.github.io/posts/index.xml"
+  );
   return {
     props: {
-      feed,
+      initialData,
     },
   };
 }
