@@ -9,10 +9,12 @@ async function feedFetch(...args) {
   return feed;
 }
 
-function Feed() {
+function Feed(props) {
   const { data } = useSWR(
-    "https://cors-anywhere.herokuapp.com/"+"https://daemon1024.github.io/posts/index.xml",
-    feedFetch
+    "https://cors-anywhere.herokuapp.com/" +
+      "https://daemon1024.github.io/posts/index.xml",
+    feedFetch,
+    { initialData: props.feed }
   );
   if (!data) return <h3>loading...</h3>;
   console.log(data);
@@ -56,4 +58,14 @@ export default function Home() {
       </footer>
     </div>
   );
+}
+
+export async function getStaticProps() {
+  const feed = await feedFetch("https://daemon1024.github.io/posts/index.xml");
+
+  return {
+    props: {
+      feed,
+    },
+  };
 }
