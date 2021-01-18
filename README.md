@@ -4,6 +4,8 @@ A web-based feed aggegator to aggregate various blogs written by folks at [OSDC]
 
 ## Setup
 
+Fork and Clone the repository.
+
 ```bash
 
 # Install deps
@@ -15,6 +17,23 @@ yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Add your feed
+
+Head to [`gaia.config.js](./gaia.config.js) and append your detailes like
+
+```diff
+export default [
+        ...
+     },
++    {
++      title: "title of your blog",
++      feed: "link to your rss feed"
++    },
+];
+```
+
+Run `yarn build && yarn start` to check if everything's running fine
 
 ## Learn More
 
