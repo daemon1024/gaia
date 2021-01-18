@@ -1,7 +1,9 @@
 import Head from "next/head";
-import styles from "../styles/Home.module.css";
 import Parser from "rss-parser";
 import useSWR from "swr";
+
+import styles from "../styles/Home.module.css";
+import gaiaList from "../gaia.config";
 
 async function feedFetch(...args) {
   const parser = new Parser();
@@ -9,9 +11,9 @@ async function feedFetch(...args) {
   return feed;
 }
 
-function Feed({ initialData }) {
+function Feed({title,feed,initialData}) {
   const { data } = useSWR(
-    "https://daemon1024.github.io/posts/index.xml",
+    feed,
     feedFetch,
     {
       initialData,
@@ -22,7 +24,7 @@ function Feed({ initialData }) {
 
   return (
     <>
-      <h2 className={styles.subtitle}>{data.title}</h2>
+      <h2 className={styles.subtitle}>{title || data.title}</h2>
       <div className={styles.grid}>
         {data.items.map((item) => (
           <a href={item.link} className={styles.card} key={item.guid}>
@@ -34,7 +36,7 @@ function Feed({ initialData }) {
   );
 }
 
-export default function Home({ initialData }) {
+export default function Home({ gaiaList }) {
   return (
     <div className={styles.container}>
       <Head>
@@ -44,8 +46,9 @@ export default function Home({ initialData }) {
 
       <main className={styles.main}>
         <h1 className={styles.title}>Welcome to Gaia!</h1>
-
-        <Feed initialData={initialData} />
+        {gaiaList.map(({title,feed,initialData}) => (
+          <Feed initialData={initialData} title={title} feed={feed} key={title}/>
+        ))}
       </main>
 
       <footer className={styles.footer}>
@@ -63,12 +66,15 @@ export default function Home({ initialData }) {
 }
 
 export async function getStaticProps() {
-  const initialData = await feedFetch(
-    "https://daemon1024.github.io/posts/index.xml"
+  await Promise.all(
+    gaiaList.map(async (feed,i) => {
+	  let initialData = await feedFetch(feed.feed);
+      gaiaList[i].initialData = initialData
+    })
   );
   return {
     props: {
-      initialData,
+      gaiaList
     },
   };
 }
